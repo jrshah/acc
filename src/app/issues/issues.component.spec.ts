@@ -4,6 +4,8 @@ import { Api } from "../api";
 
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { ToastrService, ToastrModule } from 'ngx-toastr';
 
 
 describe('IssuesComponent', () => {
@@ -16,10 +18,13 @@ describe('IssuesComponent', () => {
       imports: [
         BrowserModule,
         HttpClientModule,
+        FormsModule,
+        ToastrModule.forRoot()
       ],
       providers: [
         Api,
-        Title
+        Title,
+        ToastrService
       ],
     }).compileComponents();
     title = TestBed.get(Title);

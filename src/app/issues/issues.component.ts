@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import * as _ from 'lodash';
 import { Api } from "../api";
 import { BehaviorSubject } from "rxjs";
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'sgmt-issues',
@@ -15,15 +16,20 @@ export class IssuesComponent implements OnInit {
   repo: string;
   issues: {};
   order: Array<any>;
+  hasSuccessOrg: boolean;
+  hasSuccessRepo: boolean;
   constructor(
     private api: Api,
     private title: Title,
+    private toastr: ToastrService,
   ) {
     this.title.setTitle('Code Challenge');
     this.order = [];
   }
 
   ngOnInit() {
+    this.hasSuccessOrg = true;
+    this.hasSuccessRepo = true;
     const localData = (localStorage.getItem('order')) ? JSON.parse(localStorage.getItem('order')) : null;
     if (localData) {
       this.issues = localData.issues;
@@ -35,15 +41,27 @@ export class IssuesComponent implements OnInit {
   }
 
   validText() {
-
+    return (this.repoText() && this.orgText())
   }
 
   orgText() {
-    // console.log(this.org);
+    if (_.trim(this.org) === '') {
+      this.hasSuccessOrg = false;
+      this.toastr.error('Missing the organisation field.', 'Error');
+      return false;
+    }
+    this.hasSuccessOrg = true;
+    return true;
   }
 
   repoText() {
-    // console.log(this.repo);
+    if (_.trim(this.repo) === '') {
+      this.hasSuccessRepo = false;
+      this.toastr.error('Missing the repository field.', 'Error');
+      return false;
+    }
+    this.hasSuccessRepo = true;
+    return true;
   }
 
   dragStart(event) {
@@ -106,21 +124,30 @@ export class IssuesComponent implements OnInit {
 
   // subscribe to fetch issues service call
   loadIssues() {
+    if (!this.validText()) {
+      return;
+    }
     const currentSearch = `${this.org}::${this.repo}`;
-    this.api.fetchIssues(this.org, this.repo).subscribe((list) => {
-      this.issues = {};
-      list.forEach((issue) => {
-        issue.created_at = moment(issue.created_at).format('DD/MM/YYYY');
-        issue['updated'] = this.durationString(issue.updated_at)
-        this.issues[issue.id] = issue;
+    this.api
+      .fetchIssues(this.org, this.repo)
+      .subscribe((list) => {
+        if (!list || list.length === 0) {
+          this.toastr.error(`https://github.com/${this.org}/${this.repo}`, 'Not Found');
+          return;
+        }
+        this.issues = {};
+        list.forEach((issue) => {
+          issue.created_at = moment(issue.created_at).format('DD/MM/YYYY');
+          issue['updated'] = this.durationString(issue.updated_at)
+          this.issues[issue.id] = issue;
+        });
+        const localData = JSON.parse(localStorage.getItem('order'));
+        if (localData && localData.id === currentSearch) {
+          this.order = localData.value;
+        } else {
+          this.order = list.map((issue) => issue.id);
+          this.storeData();
+        }
       });
-      const localData = JSON.parse(localStorage.getItem('order'));
-      if (localData && localData.id === currentSearch) {
-        this.order = localData.value;
-      } else {
-        this.order = list.map((issue) => issue.id);
-        this.storeData();
-      }
-    });
   }
 }

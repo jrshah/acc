@@ -6,8 +6,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { IssuesModule } from './issues';
 import { ToastrModule } from 'ngx-toastr';
-import { SortableModule } from 'ngx-bootstrap/sortable';
-
+import { FormsModule } from '@angular/forms';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
@@ -19,8 +18,8 @@ describe('AppComponent', () => {
         BrowserModule,
         HttpClientModule,
         IssuesModule,
-        ToastrModule,
-        SortableModule.forRoot()
+        ToastrModule.forRoot(),
+        FormsModule
       ],
       providers: [
         Api,

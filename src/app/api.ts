@@ -17,7 +17,10 @@ export class Api {
     return this.http
       .get<Array<any>>(url)
       .catch((error) => {
-        return Promise.reject(error.message || error);
+        if (error.status === 404) {
+          return Observable.of([]);
+        }
+        return Observable.throw(error.message || error);
       });
   }
 }

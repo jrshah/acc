@@ -37,4 +37,19 @@ describe('Testing Api', () => {
     requestObj.flush(dummyIssue);
 
   });
+
+  it('should get no issues form github', () => {
+    const org = 'xyz';
+    const repo = '9879';
+
+    api.fetchIssues(org, repo).subscribe((list) => {
+      expect(list.length).toBe(0);
+    });
+
+    const requestObj = httpMock.expectOne(`https://api.github.com/repos/${org}/${repo}/issues`);
+    expect(requestObj.request.method).toBe('GET');
+
+  });
+
+
 });

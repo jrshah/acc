@@ -5,12 +5,26 @@
   <div class="col-sm-12">
     <form class="form-inline">
       <div class="form-group mb-2">
-        <label for="org" class="sr-only">Email</label>
-        <input type="text" class="form-control" name="org" placeholder="org" [(ngModel)]="org" (key.enter)="orgText()" (ngModelChange)="orgText()">
+        <label for="org">https://github.com/</label>
+        <input
+          [(ngModel)]="org"
+          (key.enter)="loadIssues()"
+          (ngModelChange)="orgText()"
+          [class.is-valid]="hasSuccessOrg"
+          [class.is-invalid]="!hasSuccessOrg"
+          type="text" class="form-control"
+          name="org" placeholder="org">
       </div>
       <div class="form-group mx-sm-3 mb-2">
-        <label for="repo" class="sr-only">Password</label>
-        <input type="text" class="form-control" name="repo" placeholder="repo" [(ngModel)]="repo" (key.enter)="repoText()" (ngModelChange)="repoText()">
+        <label for="repo" class="sr-only">Repo</label>
+        <input
+          [(ngModel)]="repo"
+          (key.enter)="loadIssues()"
+          (ngModelChange)="repoText()"
+          [class.is-valid]="hasSuccessRepo"
+          [class.is-invalid]="!hasSuccessRepo"
+          type="text" class="form-control"
+          name="repo" placeholder="repo">
       </div>
       <button type="submit" class="btn btn-primary mb-2" (click)="loadIssues()">Load Issues</button>
     </form>
