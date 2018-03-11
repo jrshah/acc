@@ -1,0 +1,59 @@
+<br>
+<h4 *ngIf="!order.length">Enter the org and repo name to load issues.</h4>
+<br>
+<div class="row">
+  <div class="col-sm-12">
+    <form class="form-inline">
+      <div class="form-group mb-2">
+        <label for="org" class="sr-only">Email</label>
+        <input type="text" class="form-control" name="org" placeholder="org" [(ngModel)]="org" (key.enter)="orgText()" (ngModelChange)="orgText()">
+      </div>
+      <div class="form-group mx-sm-3 mb-2">
+        <label for="repo" class="sr-only">Password</label>
+        <input type="text" class="form-control" name="repo" placeholder="repo" [(ngModel)]="repo" (key.enter)="repoText()" (ngModelChange)="repoText()">
+      </div>
+      <button type="submit" class="btn btn-primary mb-2" (click)="loadIssues()">Load Issues</button>
+    </form>
+  </div>
+</div>
+<br>
+<div class="row" *ngIf="order.length">
+  <div class="col-sm-12">
+    <table class="table table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th style="width: 10%">Issue</th>
+          <th style="width: 40%">Title</th>
+          <th style="width: 10%">Assignee</th>
+          <th style="width: 15%">Author</th>
+          <th style="width: 10%">Created</th>
+          <th style="width: 15%">Updated</th>
+        </tr>
+      </thead>
+      <tbody id="sortable">
+        <tr
+          *ngFor="let id of order; index as i"
+          id="{{id}}"
+          style="cursor:move;"
+          draggable="true"
+          (allowDrop)="allowDrop($event)"
+          (dragstart)="dragStart($event)"
+          (drop)="drop($event)"
+          (dragover)="dragOver($event)">
+          <td>{{ issues[id].id }}</td>
+          <td >{{ issues[id].title }}</td>
+          <td>
+            <ng-template #notassigned>not assgined</ng-template>
+            <span *ngIf="issues[id].assignee;else notassigned">{{ issues[id].assignee.login }}</span>
+          </td>
+          <td>
+            <ng-template #nouser>no user</ng-template>
+            <span *ngIf="issues[id].user;else nouser">{{ issues[id].user.login }}</span>
+          </td>
+          <td>{{ issues[id].created_at }}</td>
+          <td>{{ issues[id].updated }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
